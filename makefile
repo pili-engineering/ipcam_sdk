@@ -1,5 +1,3 @@
-CROSS_PREFIX:=arm-none-linux-gnueabi
-
 all:lib install
 
 install:
@@ -15,13 +13,13 @@ install:
 lib:librtmp libfdk-aac librtmp_sdk
 
 librtmp:
-	cd rtmpdump && make CROSS_COMPILE=${CROSS_PREFIX}- CRYPTO= SHARED=
+	cd rtmpdump && make CRYPTO= SHARED=
 
 librtmp_sdk:
-	cd rtmpsdk && make  CROSS_COMPILE=${CROSS_PREFIX}- all
+	cd rtmpsdk && make  all
 
 libfdk-aac:
-	cd fdk-aac && ./autogen.sh && ./configure --enable-shared=no --host=${CROSS_PREFIX} CC=${CROSS_PREFIX}-gcc CXX=${CROSS_PREFIX}-g++ && make
+	cd fdk-aac && ./autogen.sh && ./configure --enable-shared=no  && make
 
 clean:
 	cd rtmpdump && make clean
