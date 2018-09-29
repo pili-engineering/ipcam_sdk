@@ -1,9 +1,0 @@
-编译:
-一、
-  make #直接make默认是arm-none-linux-gnueabi 交叉编译工具
-
-二、
-  make CROSS_PREFIX=arm-linux  #指定交叉编译前缀
-注意：
-  arm-none-linux-gnueabi-gcc, 前缀为CROSS_PREFIX=arm-none-linux-gnueabi
-  不要写为CROSS_PREFIX=arm-none-linux-gnueabi-, 会导致fdk-aac configure报错
