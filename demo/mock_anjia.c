@@ -268,6 +268,7 @@ int start_video_file_test(void *opaque)
                                          } else {
                                                  nIDR++;
                                          }
+                                         
                                          cbRet = dataCallback(opaque, pVideoData + videoOffset + 4, nLen, THIS_IS_VIDEO, pStream->nRolloverTestBase+nNextVideoTime-nSysTimeBase, !(type == 1));
                                          if (cbRet != 0) {
                                                  bVideoOk = 0;
@@ -280,22 +281,16 @@ int start_video_file_test(void *opaque)
                                                  type = pVideoData[videoOffset + 8] & 0x7F;
                                          }
                                          type = (type >> 1);
-                                         int hevctype = is_h265_picture(type);
-                                         if (hevctype == -1) {
-                                                 printf("unknown type:%d\n", type);
-                                                 continue;
+                                         
+                                         if (type == 32){
+                                                 nIDR++;
+                                         } else {
+                                                 nNonIDR++;
                                          }
-                                         if(hevctype == HEVC_I || hevctype == HEVC_B ){
-                                                 if (hevctype == HEVC_I) {
-                                                         nIDR++;
-                                                 } else {
-                                                         nNonIDR++;
-                                                 }
-                                                 //printf("send one video(%d) frame packet:%ld", type, end - sendp);
-                                                 cbRet = dataCallback(opaque, pVideoData + videoOffset + 4, nLen, THIS_IS_VIDEO,pStream->nRolloverTestBase+nNextVideoTime-nSysTimeBase, hevctype == HEVC_I);
-                                                 if (cbRet != 0) {
-                                                         bVideoOk = 0;
-                                                 }
+                                         
+                                         cbRet = dataCallback(opaque, pVideoData + videoOffset + 4, nLen, THIS_IS_VIDEO,pStream->nRolloverTestBase+nNextVideoTime-nSysTimeBase, type == 32);//hevctype == HEVC_I);
+                                         if (cbRet != 0) {
+                                                 bVideoOk = 0;
                                          }
                                          videoOffset = videoOffset + 4 + nLen;
                                  }
@@ -460,7 +455,6 @@ void dev_sdk_set_video_format(int camera, int stream, int isH265)
 
 int dev_sdk_init(DevSdkServerType type)
 {
-        (void)type;
         memset(&cameras, 0, sizeof(cameras));
         int i = 0;
         for (i = 0; i < sizeof(cameras) / sizeof(Camera); i++) {
@@ -471,12 +465,22 @@ int dev_sdk_init(DevSdkServerType type)
                 cameras[i].videoStreams[1].nStreamNo = 1;
                 cameras[i].audioStreams[0].isAac = 1;
                 cameras[i].audioStreams[1].isAac = 1;
-                //cameras[i].audioStreams[1].IsTestAACWithoutAdts = 1;
+                cameras[i].audioStreams[0].IsTestAACWithoutAdts = 1;
+                cameras[i].audioStreams[1].IsTestAACWithoutAdts = 1;
                 //TODO default file
                 strcpy(cameras[i].audioStreams[0].file, "1_16000_a.aac");
                 strcpy(cameras[i].audioStreams[1].file, "1_16000_a.aac");
-                strcpy(cameras[i].videoStreams[0].file, "len.h264");
-                strcpy(cameras[i].videoStreams[1].file, "len.h264");
+		if (type == 0) {
+                        printf("set video file to:len.264\n");
+                        strcpy(cameras[i].videoStreams[0].file, "len.h264");
+                        strcpy(cameras[i].videoStreams[1].file, "len.h264");
+		} else {
+                        printf("set video file to:len.265\n");
+                        strcpy(cameras[i].videoStreams[0].file, "len.h265");
+                        strcpy(cameras[i].videoStreams[1].file, "len.h265");
+                        cameras[i].videoStreams[1].isH265 = 1;
+                        cameras[i].videoStreams[0].isH265 = 1;
+		}
         }
         
         return 0;

@@ -54,11 +54,12 @@ typedef struct _pagAppContext
 	pthread_mutex_t pushLock;
 	int (*RtmpH264Send)(char *pData, int nLen, double dTimeStamp, int _nIskey);
 	int (*RtmpAudioSend)(char *pData, int _nLen, double nTimeStamp, unsigned int uAudioType);
-        char rtmpUrl[RTMPURL_LEN]
+        char rtmpUrl[RTMPURL_LEN];
+        RtmpPubVideoType videoType;
 }AppContext;
 
 
-int RtmpInit(const char *pRtmpUrl);
+int RtmpInit(const char *pRtmpUrl, char *pType);
 void RtmpRelease();
 void RtmpStatus(IN int _nStatus);
 int VideoCallBack(IN int nStreamNO, IN char *pFrame, IN int nLen, 

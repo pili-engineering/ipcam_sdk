@@ -19,6 +19,11 @@ typedef enum {
         RTMP_PUB_TIMESTAMP_ABSOLUTE = 1,
         RTMP_PUB_TIMESTAMP_RELATIVE
 } RtmpPubTimeStampPolicy;
+        
+typedef enum {
+        RTMP_PUB_VIDEOTYPE_AVC = 1,
+        RTMP_PUB_VIDEOTYPE_HEVC
+} RtmpPubVideoType;
 
 typedef struct {
         int m_nType;
@@ -32,6 +37,7 @@ typedef struct {
         unsigned int m_nTimeout;
         RtmpPubNalUnit m_pPps;
         RtmpPubNalUnit m_pSps;
+        RtmpPubNalUnit m_pVps;
         RtmpPubNalUnit m_pSei;
         unsigned int m_nAudioTimebase;
         unsigned int m_nVideoTimebase;
@@ -51,11 +57,13 @@ typedef struct {
         RtmpPubTimeStampPolicy m_nTimePolicy;
 
         RtmpPubNalUnit m_aac;
+        RtmpPubVideoType m_videoType;
 } RtmpPubContext;
 
 RtmpPubContext * RtmpPubNew(const char * _url, unsigned int _nTimeout, RtmpPubAudioType _nInputAudioType, RtmpPubAudioType m_nOutputAudioType, 
                                                                 RtmpPubTimeStampPolicy _nTimePolicy);
 int RtmpPubInit(RtmpPubContext * _pRtmp);
+void RtmpPubSetVideoType(RtmpPubContext * _pRtmp, RtmpPubVideoType _type);
 void RtmpPubDel(RtmpPubContext * _pRtmp);
 
 int RtmpPubConnect(RtmpPubContext * _pRtmp);
@@ -71,6 +79,7 @@ int RtmpPubSendVideoInterframe(RtmpPubContext * _pRtmp, const char * _pData, uns
 void RtmpPubSetPps(RtmpPubContext * _pRtmp, const char * _pData, unsigned int _nSize);
 void RtmpPubSetSps(RtmpPubContext * _pRtmp, const char * _pData, unsigned int _nSize);
 void RtmpPubSetSei(RtmpPubContext * _pRtmp, const char * _pData, unsigned int _nSize);
+void RtmpPubSetVps(RtmpPubContext * _pRtmp, const char * _pData, unsigned int _nSize);
 
 
 int RtmpPubSendAudioFrame(RtmpPubContext * _pRtmp, const char * _pData, unsigned int _nSize, int _nTimeStamp);
